@@ -261,6 +261,9 @@
                     <span id="xp-val" style="color:var(--primary)">1x</span>
                 </div>
                 <div class="high-score" id="menu-highscore">最高靈魂: 0</div>
+                <div style="margin-top: 10px; font-size: 0.8rem; color: #aaa; max-height: 80px; overflow-y: auto;">
+                    本次遊玩紀錄 (F5重整後消失):<br><span id="history-list">無紀錄</span>
+                </div>
             </div>
         </div>
 
@@ -308,6 +311,7 @@
         let highScore = localStorage.getItem('arcane_survivor_highscore') || 0;
         let frames = 0;
         let xpMultiplier = 1;
+        let sessionHistory = [];
 
         // Player System
         const player = {
@@ -475,6 +479,8 @@
                 highScore = score;
                 localStorage.setItem('arcane_survivor_highscore', highScore);
             }
+            sessionHistory.push(score);
+            document.getElementById('history-list').innerHTML = sessionHistory.map((s, i) => `第${i + 1}次: ${s}靈魂`).join('<br>');
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = `收集的靈魂: ${score}`;
             document.getElementById('menu-highscore').innerText = `最高靈魂: ${highScore}`;
@@ -513,8 +519,6 @@
                 }
 
                 ctx.globalAlpha = 1;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = this.color;
                 ctx.fillStyle = '#ffff66'; // core
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -558,8 +562,6 @@
             }
             draw() {
                 ctx.save();
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
                 ctx.fillStyle = '#ccffff';
 
                 // Draw a diamond
@@ -634,8 +636,6 @@
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                ctx.shadowBlur = 5;
-                ctx.shadowColor = '#000';
 
                 if (this.type === 'fast') {
                     // Bat wing shape
@@ -721,8 +721,6 @@
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.fillStyle = this.color;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -774,9 +772,7 @@
             ctx.stroke();
 
             // Staff Gem
-            ctx.fillStyle = varColor = Math.random() > 0.5 ? '#00ffff' : '#ff00ff';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = varColor;
+            ctx.fillStyle = Math.random() > 0.5 ? '#00ffff' : '#ff00ff';
             ctx.beginPath();
             ctx.arc(player.radius + 2, -player.radius - 12, 4, 0, Math.PI * 2);
             ctx.fill();
@@ -798,7 +794,6 @@
                     ctx.arc(0, 0, player.radius + 15, -Math.PI / 2, -Math.PI / 2 + (player.shield / 100) * Math.PI * 2);
                     ctx.lineWidth = 3;
                     ctx.strokeStyle = '#00ffff';
-                    ctx.filter = 'drop-shadow(0 0 5px #00ffff)';
                     ctx.stroke();
                 }
                 ctx.restore();
@@ -811,9 +806,6 @@
             ctx.globalCompositeOperation = 'source-over';
             ctx.fillStyle = 'rgba(20, 15, 30, 0.4)'; // Dark magic floor
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Global blending for magic effects
-            ctx.globalCompositeOperation = 'lighter';
 
             if (gameState === 'PLAYING' || gameState === 'LEVELING') {
                 if (gameState === 'PLAYING') {
