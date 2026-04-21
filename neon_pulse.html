@@ -4,18 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Pulse | 幾何生存</title>
+    <title>Arcane Survivor | 秘法生存</title>
     <style>
         :root {
-            --primary: #00ffff;
-            --secondary: #ff00ff;
-            --accent: #ffff00;
-            --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --font-main: 'Orbitron', 'Inter', sans-serif;
+            --primary: #ffd700;
+            --secondary: #ff4500;
+            --magic: #00ffff;
+            --bg: #120e1a;
+            --glass: rgba(20, 15, 30, 0.7);
+            --font-main: 'Georgia', 'Inter', serif;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500&display=swap');
 
         * {
             margin: 0;
@@ -26,7 +26,7 @@
 
         body {
             background-color: var(--bg);
-            color: white;
+            color: #f7eaca;
             font-family: var(--font-main);
             overflow: hidden;
             display: flex;
@@ -43,9 +43,10 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            background: radial-gradient(circle at center, #1c1524 0%, #0a0810 100%);
         }
 
-        /* Glassmorphism UI */
+        /* UI Layer */
         #ui-layer {
             position: relative;
             z-index: 10;
@@ -63,22 +64,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px);
             transition: opacity 0.5s ease;
             pointer-events: all;
         }
 
         .card {
             background: var(--glass);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--primary);
             padding: 3rem;
-            border-radius: 20px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 15px rgba(255, 215, 0, 0.1);
             max-width: 500px;
             width: 90%;
             animation: fadeIn 0.8s ease-out;
@@ -97,33 +98,33 @@
         }
 
         h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            letter-spacing: 5px;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         p {
-            font-family: 'Inter';
+            font-family: 'Inter', sans-serif;
             margin-bottom: 2rem;
             line-height: 1.6;
-            color: rgba(255, 255, 255, 0.8);
+            color: #d8cbb8;
         }
 
         .btn {
-            background: transparent;
+            background: rgba(255, 215, 0, 0.1);
             border: 2px solid var(--primary);
             color: var(--primary);
             padding: 1rem 3rem;
             font-family: var(--font-main);
+            font-weight: bold;
             font-size: 1.2rem;
             cursor: pointer;
-            border-radius: 50px;
+            border-radius: 5px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -131,7 +132,7 @@
         .btn:hover {
             background: var(--primary);
             color: var(--bg);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
             transform: scale(1.05);
         }
 
@@ -144,8 +145,9 @@
             justify-content: space-between;
             font-family: var(--font-main);
             font-size: 1.5rem;
+            font-weight: bold;
             color: var(--primary);
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            text-shadow: 0 0 5px #000, 0 0 10px var(--primary);
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.5s ease;
@@ -159,25 +161,27 @@
         .high-score {
             font-size: 0.9rem;
             color: var(--secondary);
-            margin-top: 10px;
+            margin-top: 15px;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* XP Bar */
+        /* XP Bar - Mana Bar */
         #xp-bar-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 20;
+            border-bottom: 1px solid var(--magic);
         }
 
         #xp-bar-fill {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), #a200ff);
-            box-shadow: 0 0 10px var(--primary);
+            background: linear-gradient(90deg, #0088ff, var(--magic));
+            box-shadow: 0 0 10px var(--magic);
             transition: width 0.3s ease;
         }
 
@@ -188,26 +192,25 @@
 
         .skill-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
             width: 100%;
         }
 
         .skill-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--primary);
             padding: 1.5rem;
-            border-radius: 15px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .skill-card:hover {
-            background: rgba(0, 255, 255, 0.1);
-            border-color: var(--primary);
+            background: rgba(255, 215, 0, 0.15);
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
         .skill-name {
@@ -215,12 +218,14 @@
             font-weight: bold;
             display: block;
             margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .skill-desc {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-family: 'Inter';
+            font-size: 0.85rem;
+            color: #ccc;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.4;
         }
 
         .settings {
@@ -231,6 +236,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            font-family: 'Inter', sans-serif;
         }
 
         input[type="range"] {
@@ -246,22 +252,22 @@
     <div id="ui-layer">
         <div id="start-screen" class="overlay">
             <div class="card">
-                <h1>NEON PULSE</h1>
-                <p>閃匿於幾何深淵之中。移動以自動射擊。收集能量晶體以進化系統。</p>
-                <button class="btn" onclick="startGame()">同步核心</button>
+                <h1>Arcane Survivor</h1>
+                <p>化身秘法大師，驅逐湧動的黑暗魔物。<br>移動施法。收集魔力水晶以覺醒全新法術。</p>
+                <button class="btn" onclick="startGame()">踏入深淵</button>
                 <div class="settings">
-                    經驗倍率: <input type="range" id="xp-mult" min="1" max="10" value="1" step="1"
+                    試煉倍率 (經驗): <input type="range" id="xp-mult" min="1" max="10" value="1" step="1"
                         oninput="updateXpLabel(this.value)">
-                    <span id="xp-val">1x</span>
+                    <span id="xp-val" style="color:var(--primary)">1x</span>
                 </div>
-                <div class="high-score" id="menu-highscore">最高紀錄: 0</div>
+                <div class="high-score" id="menu-highscore">最高靈魂: 0</div>
             </div>
         </div>
 
         <div id="level-up-screen" class="overlay hidden">
             <div class="card" style="max-width: 600px;">
-                <h1 style="font-size: 2.5rem;">核心進化</h1>
-                <p>選擇一項核心增益以強化系統連動。</p>
+                <h1 style="font-size: 2.2rem;">魔力覺醒</h1>
+                <p>選擇一卷法術卷軸以學習或強化奧秘。</p>
                 <div class="skill-grid" id="skill-options">
                     <!-- Skills will be injected here -->
                 </div>
@@ -270,21 +276,20 @@
 
         <div id="game-over-screen" class="overlay hidden">
             <div class="card">
-                <h1
-                    style="background: linear-gradient(45deg, #ff0000, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    CORE FAIL</h1>
-                <p>能量核心已崩潰。系統重新校準中。</p>
-                <h2 id="final-score" style="font-size: 2rem; margin-bottom: 2rem;">分數: 0</h2>
+                <h1 style="color: var(--secondary); text-shadow: 0 0 10px var(--secondary);">
+                    靈魂消散</h1>
+                <p>你的魔力已被吞噬。魔物再次佔據了森林。</p>
+                <h2 id="final-score" style="font-size: 2rem; margin-bottom: 2rem; color:#fff;">靈魂收集: 0</h2>
                 <button class="btn" style="border-color: var(--secondary); color: var(--secondary);"
-                    onclick="startGame()">重啟序列</button>
+                    onclick="startGame()">再次輪迴</button>
             </div>
         </div>
 
         <div id="hud">
-            <div id="score">SCORE: 0000</div>
-            <div id="level-hud">LV. 1</div>
-            <div id="shield-hud">SHIELD: 100%</div>
-            <div id="lives">CORE: STABLE</div>
+            <div id="score">SOULS: 0000</div>
+            <div id="level-hud">法師等級. 1</div>
+            <div id="shield-hud">護盾: 100%</div>
+            <div id="lives">魔力狀態: 穩定</div>
         </div>
         <div id="xp-bar-container">
             <div id="xp-bar-fill"></div>
@@ -298,10 +303,9 @@
         const scoreEl = document.getElementById('score');
         const hud = document.getElementById('hud');
 
-        // Game State
-        let gameState = 'MENU'; // MENU, PLAYING, GAMEOVER, LEVELING
+        let gameState = 'MENU';
         let score = 0;
-        let highScore = localStorage.getItem('neon_pulse_highscore') || 0;
+        let highScore = localStorage.getItem('arcane_survivor_highscore') || 0;
         let frames = 0;
         let xpMultiplier = 1;
 
@@ -309,42 +313,38 @@
         const player = {
             x: window.innerWidth / 2,
             y: window.innerHeight / 2,
-            radius: 15,
+            radius: 12,
             targetX: window.innerWidth / 2,
             targetY: window.innerHeight / 2,
-            color: '#00ffff',
-            fireRate: 8,
+            color: '#ffd700',
+            fireRate: 20, // Slower but bigger magic
             lastFire: 0,
             level: 1,
             xp: 0,
             xpToNext: 100,
 
-            // Stats & Skills
-            moveSpeed: 0.15,
+            moveSpeed: 0.12,
             projectileCount: 1,
             piercing: 0,
             damage: 1,
-            knockback: 0,
+            knockback: 1,
 
-            // Shield System
             shield: 100,
             maxShield: 100,
-            shieldRegen: 0.1,
+            shieldRegen: 0.05,
             lastHit: 0,
 
-            // Aiming
             aimAngle: 0
         };
 
         const SKILLS = [
-            { id: 'multishot', name: '多重射擊', desc: '增加額外彈幕', max: 5 },
-            { id: 'pierce', name: '貫穿核心', desc: '能量彈可貫穿敵體', max: 3 },
-            { id: 'speed', name: '超載引擎', desc: '提升機動速度', max: 5 },
-            { id: 'firerate', name: '脈衝加速', desc: '提升核心射速', max: 8 },
-            { id: 'pulse', name: '能量震盪', desc: '增加擊退效果', max: 5 }
+            { id: 'multishot', name: '多重火球', desc: '召喚額外的火球打擊敵人', max: 5 },
+            { id: 'pierce', name: '烈焰貫穿', desc: '火球的溫度極高，可貫穿魔物', max: 3 },
+            { id: 'speed', name: '風行步法', desc: '身輕如燕，提升移動速度', max: 5 },
+            { id: 'firerate', name: '極速詠唱', desc: '縮短法術發射間隔', max: 8 },
+            { id: 'pulse', name: '爆裂衝擊', desc: '火球附帶強大的擊退效果', max: 5 }
         ];
 
-        // Entities
         let projectiles = [];
         let enemies = [];
         let particles = [];
@@ -359,7 +359,6 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // Input
         window.addEventListener('mousemove', (e) => {
             player.targetX = e.clientX;
             player.targetY = e.clientY;
@@ -373,7 +372,7 @@
             e.preventDefault();
         }, { passive: false });
 
-        document.getElementById('menu-highscore').innerText = `最高紀錄: ${highScore}`;
+        document.getElementById('menu-highscore').innerText = `最高靈魂: ${highScore}`;
 
         function updateXpLabel(v) {
             document.getElementById('xp-val').innerText = v + 'x';
@@ -390,18 +389,17 @@
             enemySpawnRate = 60;
             frames = 0;
 
-            // Stats Reset
             player.level = 1;
             player.xp = 0;
             player.xpToNext = 100;
-            player.fireRate = 10;
-            player.moveSpeed = 0.15;
+            player.fireRate = 25;
+            player.moveSpeed = 0.12;
             player.projectileCount = 1;
             player.piercing = 0;
             player.knockback = 0;
             player.shield = 100;
             player.maxShield = 100;
-            player.shieldRegen = 0.1;
+            player.shieldRegen = 0.05;
 
             updateHUD();
             document.getElementById('start-screen').classList.add('hidden');
@@ -410,18 +408,18 @@
             hud.classList.remove('hidden');
             hud.style.opacity = 1;
 
-            spawnParticle(player.x, player.y, player.color, 20);
+            spawnParticle(player.x, player.y, '#fff', 30);
         }
 
         function updateHUD() {
-            scoreEl.innerText = `SCORE: ${score.toString().padStart(5, '0')}`;
-            document.getElementById('level-hud').innerText = `LV. ${player.level}`;
-            document.getElementById('shield-hud').innerText = `SHIELD: ${Math.ceil(player.shield)}%`;
+            scoreEl.innerText = `SOULS: ${score.toString().padStart(5, '0')}`;
+            document.getElementById('level-hud').innerText = `術士 LV. ${player.level}`;
+            document.getElementById('shield-hud').innerText = `奧術護盾: ${Math.ceil(player.shield)}%`;
             const xpPercent = (player.xp / player.xpToNext) * 100;
             document.getElementById('xp-bar-fill').style.width = xpPercent + '%';
 
             if (player.shield < 30) {
-                document.getElementById('shield-hud').style.color = '#ff0000';
+                document.getElementById('shield-hud').style.color = '#ff4500';
             } else {
                 document.getElementById('shield-hud').style.color = 'var(--primary)';
             }
@@ -441,11 +439,9 @@
         function showLevelUp() {
             gameState = 'LEVELING';
             document.getElementById('level-up-screen').classList.remove('hidden');
-
             const skillContainer = document.getElementById('skill-options');
             skillContainer.innerHTML = '';
 
-            // Randomly pick 3 skills
             const shuffled = [...SKILLS].sort(() => 0.5 - Math.random());
             const selected = shuffled.slice(0, 3);
 
@@ -465,11 +461,10 @@
             switch (id) {
                 case 'multishot': player.projectileCount++; break;
                 case 'pierce': player.piercing++; break;
-                case 'speed': player.moveSpeed += 0.05; break;
-                case 'firerate': player.fireRate = Math.max(3, player.fireRate - 1); break;
-                case 'pulse': player.knockback += 2; break;
+                case 'speed': player.moveSpeed += 0.03; break;
+                case 'firerate': player.fireRate = Math.max(5, player.fireRate - 3); break;
+                case 'pulse': player.knockback += 3; break;
             }
-
             gameState = 'PLAYING';
             document.getElementById('level-up-screen').classList.add('hidden');
         }
@@ -478,38 +473,57 @@
             gameState = 'GAMEOVER';
             if (score > highScore) {
                 highScore = score;
-                localStorage.setItem('neon_pulse_highscore', highScore);
+                localStorage.setItem('arcane_survivor_highscore', highScore);
             }
             document.getElementById('game-over-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = `分數: ${score}`;
-            document.getElementById('menu-highscore').innerText = `最高紀錄: ${highScore}`;
+            document.getElementById('final-score').innerText = `收集的靈魂: ${score}`;
+            document.getElementById('menu-highscore').innerText = `最高靈魂: ${highScore}`;
             hud.style.opacity = 0;
         }
 
-        // Classes
         class Projectile {
             constructor(x, y, angle) {
                 this.x = x;
                 this.y = y;
-                this.radius = 3.5;
-                this.speed = 14;
+                this.radius = 8;
+                this.speed = 10;
                 this.vx = Math.cos(angle) * this.speed;
                 this.vy = Math.sin(angle) * this.speed;
-                this.color = player.color;
+                this.color = '#ff6a00'; // Fireball color
                 this.piercing = player.piercing;
                 this.hitEnemies = new Set();
+                this.trail = [];
             }
             update() {
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 5) this.trail.shift();
                 this.x += this.vx;
                 this.y += this.vy;
             }
             draw() {
                 ctx.save();
-                ctx.shadowBlur = 10;
+                // Draw trailing fire
+                for (let i = 0; i < this.trail.length; i++) {
+                    const pt = this.trail[i];
+                    ctx.globalAlpha = (i / this.trail.length) * 0.5;
+                    ctx.fillStyle = '#ff0000';
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, this.radius * (i / this.trail.length), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 15;
                 ctx.shadowColor = this.color;
-                ctx.fillStyle = this.color;
+                ctx.fillStyle = '#ffff66'; // core
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = this.color; // outer
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
+                ctx.globalAlpha = 0.5;
                 ctx.fill();
                 ctx.restore();
             }
@@ -519,31 +533,41 @@
             constructor(x, y, value) {
                 this.x = x;
                 this.y = y;
-                this.radius = 4;
+                this.radius = 6;
                 this.value = value;
-                this.color = '#a200ff';
+                this.color = '#00ffff'; // blue crystal
                 this.pulling = false;
+                this.vy = -2; // initial bounce
+                this.vx = (Math.random() - 0.5) * 4;
             }
             update() {
+                // Bounce friction
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.9;
+                this.vy *= 0.9;
+
                 const dist = Math.hypot(player.x - this.x, player.y - this.y);
-                if (dist < 150) this.pulling = true;
+                if (dist < 180) this.pulling = true;
 
                 if (this.pulling) {
                     const angle = Math.atan2(player.y - this.y, player.x - this.x);
-                    this.x += Math.cos(angle) * 10;
-                    this.y += Math.sin(angle) * 10;
+                    this.x += Math.cos(angle) * 12;
+                    this.y += Math.sin(angle) * 12;
                 }
             }
             draw() {
                 ctx.save();
-                ctx.shadowBlur = 5;
+                ctx.shadowBlur = 10;
                 ctx.shadowColor = this.color;
-                ctx.fillStyle = this.color;
+                ctx.fillStyle = '#ccffff';
+
+                // Draw a diamond
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y - this.radius);
-                ctx.lineTo(this.x + this.radius, this.y);
+                ctx.lineTo(this.x + this.radius * 0.8, this.y);
                 ctx.lineTo(this.x, this.y + this.radius);
-                ctx.lineTo(this.x - this.radius, this.y);
+                ctx.lineTo(this.x - this.radius * 0.8, this.y);
                 ctx.closePath();
                 ctx.fill();
                 ctx.restore();
@@ -553,34 +577,30 @@
         class Enemy {
             constructor(type = 'basic') {
                 this.type = type;
-                this.radius = 15;
+                this.radius = 18;
                 this.health = 1;
-                this.xpValue = 20;
+                this.xpValue = 30;
 
-                if (type === 'fast') {
-                    this.radius = 10;
+                if (type === 'fast') { // Bat
+                    this.radius = 12;
                     this.speedMult = 1.8;
-                    this.color = '#00ff00';
-                    this.sides = 3;
-                    this.xpValue = 15;
-                } else if (type === 'tank') {
-                    this.radius = 25;
-                    this.speedMult = 0.6;
-                    this.color = '#ff0000';
-                    this.sides = 6;
-                    this.health = 5 + Math.floor(score / 5000);
-                    this.xpValue = 100;
-                } else if (type === 'swarm') {
+                    this.color = '#4b0082'; // Indigo
+                    this.xpValue = 20;
+                } else if (type === 'tank') { // Golem
+                    this.radius = 35;
+                    this.speedMult = 0.5;
+                    this.color = '#555555'; // Grey
+                    this.health = 6 + Math.floor(score / 4000);
+                    this.xpValue = 120;
+                } else if (type === 'swarm') { // Rats/Spiders
                     this.radius = 8;
-                    this.speedMult = 1.4;
-                    this.color = '#ffff00';
-                    this.sides = 4;
-                    this.xpValue = 10;
-                } else {
-                    this.radius = 15;
-                    this.speedMult = 1.0;
-                    this.color = '#ff00ff';
-                    this.sides = 4;
+                    this.speedMult = 1.3;
+                    this.color = '#8b0000'; // Dark red
+                    this.xpValue = 15;
+                } else { // Slime
+                    this.radius = 20;
+                    this.speedMult = 0.8;
+                    this.color = '#32cd32'; // Lime green
                 }
 
                 if (Math.random() < 0.5) {
@@ -591,16 +611,15 @@
                     this.y = Math.random() < 0.5 ? -this.radius : canvas.height + this.radius;
                 }
 
-                this.speed = (Math.random() * 2 + 1) * this.speedMult + (score / 2000);
+                this.speed = (Math.random() * 1.5 + 0.5) * this.speedMult + (score / 3000);
                 this.vx = 0;
                 this.vy = 0;
-                this.rot = 0;
-                this.rotSpeed = (Math.random() - 0.5) * 0.1;
+                this.wobble = Math.random() * Math.PI * 2;
             }
             update() {
                 const targetAngle = Math.atan2(player.y - this.y, player.x - this.x);
-                this.vx += Math.cos(targetAngle) * 0.08;
-                this.vy += Math.sin(targetAngle) * 0.08;
+                this.vx += Math.cos(targetAngle) * 0.05;
+                this.vy += Math.sin(targetAngle) * 0.05;
 
                 const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
                 if (currentSpeed > this.speed) {
@@ -610,32 +629,71 @@
 
                 this.x += this.vx;
                 this.y += this.vy;
-                this.rot += this.rotSpeed;
+                this.wobble += 0.1;
             }
             draw() {
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                ctx.rotate(this.rot);
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = this.color;
-                ctx.strokeStyle = this.color;
-                ctx.lineWidth = 3;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#000';
 
-                ctx.beginPath();
-                for (let i = 0; i < this.sides; i++) {
-                    const angle = (i / this.sides) * Math.PI * 2;
-                    const px = Math.cos(angle) * this.radius;
-                    const py = Math.sin(angle) * this.radius;
-                    if (i === 0) ctx.moveTo(px, py);
-                    else ctx.lineTo(px, py);
+                if (this.type === 'fast') {
+                    // Bat wing shape
+                    const flap = Math.sin(this.wobble * 2) * 5;
+                    ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI / 2);
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.moveTo(0, this.radius);
+                    ctx.lineTo(this.radius + flap, -this.radius);
+                    ctx.lineTo(0, -this.radius * 0.5);
+                    ctx.lineTo(-this.radius - flap, -this.radius);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (this.type === 'tank') {
+                    // Stone Golem
+                    ctx.fillStyle = this.color;
+                    ctx.strokeStyle = '#222';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(-this.radius, -this.radius * 0.8);
+                    ctx.lineTo(this.radius, -this.radius * 0.8);
+                    ctx.lineTo(this.radius * 0.8, this.radius);
+                    ctx.lineTo(-this.radius * 0.8, this.radius);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (this.type === 'swarm') {
+                    // Spiders
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Draw little legs
+                    ctx.strokeStyle = '#222';
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 4; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        const legOffset = Math.sin(this.wobble + i * 2) * 4;
+                        ctx.lineTo(this.radius + 3 + legOffset, (i - 1.5) * 5);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        ctx.lineTo(-this.radius - 3 - legOffset, (i - 1.5) * 5);
+                        ctx.stroke();
+                    }
+                } else {
+                    // Slime blob
+                    const squeeze = Math.sin(this.wobble) * 3;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, this.radius + squeeze, this.radius - squeeze, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Slime eyes
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.arc(-5, -5, 3, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(5, -5, 3, 0, Math.PI * 2); ctx.fill();
                 }
-                ctx.closePath();
-                ctx.stroke();
-
-                // Core glow
-                ctx.globalAlpha = 0.2;
-                ctx.fillStyle = this.color;
-                ctx.fill();
 
                 ctx.restore();
             }
@@ -645,14 +703,14 @@
             constructor(x, y, color) {
                 this.x = x;
                 this.y = y;
-                this.radius = Math.random() * 3;
+                this.radius = Math.random() * 4 + 1;
                 this.color = color;
                 const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 5 + 2;
+                const speed = Math.random() * 4 + 1;
                 this.vx = Math.cos(angle) * speed;
                 this.vy = Math.sin(angle) * speed;
                 this.alpha = 1;
-                this.decay = Math.random() * 0.02 + 0.01;
+                this.decay = Math.random() * 0.03 + 0.01;
             }
             update() {
                 this.x += this.vx;
@@ -663,6 +721,8 @@
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
                 ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
@@ -676,150 +736,173 @@
             }
         }
 
+        // Draw Wizard Character
+        function drawPlayer() {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.aimAngle + Math.PI / 2);
+
+            // Robe / Body
+            ctx.fillStyle = '#4B0082'; // Deep purple robe
+            ctx.beginPath();
+            ctx.moveTo(0, -player.radius);
+            ctx.lineTo(player.radius, player.radius);
+            ctx.lineTo(-player.radius, player.radius);
+            ctx.closePath();
+            ctx.fill();
+
+            // Head & Hat
+            ctx.fillStyle = '#ffcc99'; // Skin color
+            ctx.beginPath();
+            ctx.arc(0, -player.radius, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#220044'; // Hat color
+            ctx.beginPath();
+            ctx.moveTo(-10, -player.radius);
+            ctx.lineTo(10, -player.radius);
+            ctx.lineTo(0, -player.radius - 15);
+            ctx.closePath();
+            ctx.fill();
+
+            // Magical Staff
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(player.radius + 2, 0);
+            ctx.lineTo(player.radius + 2, -player.radius - 10);
+            ctx.stroke();
+
+            // Staff Gem
+            ctx.fillStyle = varColor = Math.random() > 0.5 ? '#00ffff' : '#ff00ff';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = varColor;
+            ctx.beginPath();
+            ctx.arc(player.radius + 2, -player.radius - 12, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+
+            // Mana Shield Circle
+            if (player.shield > 0) {
+                ctx.save();
+                ctx.translate(player.x, player.y);
+                ctx.beginPath();
+                ctx.arc(0, 0, player.radius + 15, 0, Math.PI * 2);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = `rgba(0, 255, 255, ${player.shield / 100 * 0.4})`;
+                ctx.stroke();
+
+                if (player.shield < 100) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, player.radius + 15, -Math.PI / 2, -Math.PI / 2 + (player.shield / 100) * Math.PI * 2);
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#00ffff';
+                    ctx.filter = 'drop-shadow(0 0 5px #00ffff)';
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+
         function animate() {
             frames++;
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // Motion blur effect
+            // Draw floor/bg clearing
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = 'rgba(20, 15, 30, 0.4)'; // Dark magic floor
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Global blending for magic effects
+            ctx.globalCompositeOperation = 'lighter';
+
             if (gameState === 'PLAYING' || gameState === 'LEVELING') {
-                // Player movement
                 if (gameState === 'PLAYING') {
                     player.x += (player.targetX - player.x) * player.moveSpeed;
                     player.y += (player.targetY - player.y) * player.moveSpeed;
 
-                    // Shield Regen
-                    if (frames - player.lastHit > 180) { // 3 seconds no hit
+                    if (frames - player.lastHit > 180) { // 3 seconds
                         player.shield = Math.min(player.maxShield, player.shield + player.shieldRegen);
                     }
                 }
 
-                // Draw pulses behind player
-                ctx.save();
-                ctx.globalAlpha = 0.15;
-                ctx.strokeStyle = player.color;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(player.x, player.y, player.radius + Math.sin(frames * 0.1) * 8, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.restore();
-
-                // Draw Player
-                ctx.save();
-                ctx.translate(player.x, player.y);
-                ctx.rotate(player.aimAngle + Math.PI / 2);
-                ctx.shadowBlur = 25;
-                ctx.shadowColor = player.color;
-                ctx.strokeStyle = player.color;
-                ctx.lineWidth = 4;
-
-                ctx.beginPath();
-                ctx.moveTo(0, -player.radius);
-                ctx.lineTo(player.radius, player.radius);
-                ctx.lineTo(0, player.radius * 0.5);
-                ctx.lineTo(-player.radius, player.radius);
-                ctx.closePath();
-                ctx.stroke();
-
-                // Draw Shield Circle
-                if (player.shield > 0) {
-                    ctx.beginPath();
-                    ctx.arc(0, 0, player.radius + 10, 0, Math.PI * 2);
-                    ctx.lineWidth = 2;
-                    ctx.strokeStyle = `rgba(0, 255, 255, ${player.shield / 100 * 0.5})`;
-                    ctx.stroke();
-
-                    if (player.shield < 100) {
-                        ctx.beginPath();
-                        ctx.arc(0, 0, player.radius + 10, -Math.PI / 2, -Math.PI / 2 + (player.shield / 100) * Math.PI * 2);
-                        ctx.lineWidth = 4;
-                        ctx.strokeStyle = player.color;
-                        ctx.stroke();
-                    }
-                }
-                ctx.restore();
+                drawPlayer();
 
                 if (gameState === 'LEVELING') {
                     requestAnimationFrame(animate);
                     return;
                 }
 
-                // Auto Shooting
+                // Fire Magic
                 if (frames % player.fireRate === 0) {
                     const baseAngle = player.aimAngle;
-                    const spread = 0.2;
+                    const spread = 0.25;
                     for (let i = 0; i < player.projectileCount; i++) {
                         const angle = baseAngle + (i - (player.projectileCount - 1) / 2) * spread;
                         projectiles.push(new Projectile(player.x, player.y, angle));
                     }
                 }
 
-                // Update Projectiles
                 projectiles = projectiles.filter(p => {
                     p.update();
                     p.draw();
                     return p.x > 0 && p.x < canvas.width && p.y > 0 && p.y < canvas.height;
                 });
 
-                // Spawn Enemies
-                if (frames % Math.max(8, Math.floor(enemySpawnRate - score / 1000)) === 0) {
+                // Spawn Monsters
+                if (frames % Math.max(10, Math.floor(enemySpawnRate - score / 800)) === 0) {
                     const rand = Math.random();
                     let type = 'basic';
-                    if (rand < 0.1) type = 'tank';
+                    if (rand < 0.08) type = 'tank';
                     else if (rand < 0.25) type = 'fast';
-                    else if (rand < 0.4) type = 'swarm';
+                    else if (rand < 0.45) type = 'swarm';
 
                     if (type === 'swarm') {
-                        // Spawn a cluster
-                        for (let i = 0; i < 3; i++) {
-                            enemies.push(new Enemy(type));
-                        }
+                        for (let i = 0; i < 4; i++) enemies.push(new Enemy(type));
                     } else {
                         enemies.push(new Enemy(type));
                     }
                 }
 
-                // Update XP Gems
+                // Update Gems
                 xpGems = xpGems.filter(gem => {
                     gem.update();
                     gem.draw();
                     const dist = Math.hypot(gem.x - player.x, gem.y - player.y);
-                    if (dist < player.radius + gem.radius) {
+                    if (dist < player.radius + gem.radius + 10) {
                         gainXP(gem.value);
+                        // small absorb particle
+                        spawnParticle(player.x, player.y, '#00ffff', 2);
                         return false;
                     }
                     return true;
                 });
 
-                // Update Enemies
+                // Update Monsters
                 enemies = enemies.filter((e, eIndex) => {
                     e.update();
                     e.draw();
 
-                    // Collision with Player
                     const dist = Math.hypot(e.x - player.x, e.y - player.y);
                     if (dist < e.radius + player.radius + (player.shield > 0 ? 10 : 0)) {
                         if (player.shield > 0) {
-                            player.shield -= 25;
+                            player.shield -= 35;
                             player.lastHit = frames;
-                            spawnParticle(e.x, e.y, player.color, 10);
+                            spawnParticle(e.x, e.y, player.color, 15);
                             enemies.splice(eIndex, 1);
                         } else {
-                            spawnParticle(player.x, player.y, player.color, 30);
+                            spawnParticle(player.x, player.y, '#ff0000', 50);
                             gameOver();
                         }
                         return true;
                     }
 
-                    // Collision with Projectiles
                     projectiles.forEach((p, pIndex) => {
                         if (p.hitEnemies.has(e)) return;
                         const distP = Math.hypot(e.x - p.x, e.y - p.y);
                         if (distP < e.radius + p.radius) {
-                            // Hit!
                             e.health -= player.damage;
                             p.hitEnemies.add(e);
 
-                            // Knockback
                             if (player.knockback > 0) {
                                 const kAngle = Math.atan2(e.y - p.y, e.x - p.x);
                                 e.vx += Math.cos(kAngle) * player.knockback;
@@ -828,7 +911,7 @@
 
                             if (e.health <= 0) {
                                 score += e.xpValue;
-                                spawnParticle(e.x, e.y, e.color, 15);
+                                spawnParticle(e.x, e.y, e.color, 20);
                                 xpGems.push(new XPGem(e.x, e.y, e.xpValue));
                                 enemies.splice(eIndex, 1);
                             }
@@ -845,17 +928,12 @@
                 updateHUD();
             }
 
-            // Update Particles
+            // Particles
             particles = particles.filter(p => {
                 p.update();
                 p.draw();
                 return p.alpha > 0;
             });
-
-            // Decor: Background particles
-            if (frames % 10 === 0) {
-                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, 'rgba(255,255,255,0.1)'));
-            }
 
             requestAnimationFrame(animate);
         }
