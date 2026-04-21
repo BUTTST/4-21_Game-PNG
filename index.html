@@ -83,6 +83,7 @@
             max-width: 500px;
             width: 90%;
             animation: fadeIn 0.8s ease-out;
+            position: relative;
         }
 
         @keyframes fadeIn {
@@ -243,6 +244,80 @@
             accent-color: var(--primary);
             cursor: pointer;
         }
+
+        /* History Sidebar */
+        #history-sidebar {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100%;
+            background: rgba(10, 5, 15, 0.95);
+            border-left: 2px solid var(--primary);
+            color: #d8cbb8;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.8);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: all;
+        }
+
+        #history-sidebar.open {
+            transform: translateX(0);
+        }
+
+        #history-sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .history-item {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .history-item h4 {
+            color: var(--secondary);
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.3);
+            padding-bottom: 5px;
+        }
+
+        .history-stats {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            font-family: 'Inter', sans-serif;
+            color: #aaa;
+        }
+
+        .history-stats div {
+            margin-bottom: 5px;
+        }
+
+        .history-stats span {
+            color: var(--magic);
+            font-weight: bold;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+            margin-top: 50px;
+        }
     </style>
 </head>
 
@@ -261,9 +336,6 @@
                     <span id="xp-val" style="color:var(--primary)">1x</span>
                 </div>
                 <div class="high-score" id="menu-highscore">最高靈魂: 0</div>
-                <div style="margin-top: 10px; font-size: 0.8rem; color: #aaa; max-height: 80px; overflow-y: auto;">
-                    本次遊玩紀錄 (F5重整後消失):<br><span id="history-list">無紀錄</span>
-                </div>
             </div>
         </div>
 
@@ -286,9 +358,6 @@
                 <button class="btn"
                     style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 1.5rem;"
                     onclick="startGame()">再次輪迴</button>
-                <div style="font-size: 0.8rem; color: #aaa; max-height: 80px; overflow-y: auto;">
-                    本次遊玩紀錄:<br><span id="history-list-gameover">無紀錄</span>
-                </div>
             </div>
         </div>
 
@@ -300,6 +369,14 @@
         </div>
         <div id="xp-bar-container">
             <div id="xp-bar-fill"></div>
+        </div>
+
+        <!-- History Sidebar -->
+        <div id="history-sidebar" class="open">
+            <h3>歷次輪迴紀錄</h3>
+            <div id="sidebar-history-list">
+                <div class="empty-history">尚未有任何戰鬥紀錄<br>(F5重整後將會清除)</div>
+            </div>
         </div>
     </div>
 
@@ -315,7 +392,10 @@
         let highScore = localStorage.getItem('arcane_survivor_highscore') || 0;
         let frames = 0;
         let xpMultiplier = 1;
+
         let sessionHistory = [];
+        let currentKills = { slime: 0, bat: 0, golem: 0, spider: 0 };
+        let playerSkillLevels = { multishot: 0, pierce: 0, speed: 0, firerate: 0, pulse: 0 };
 
         // Player System
         const player = {
@@ -325,7 +405,7 @@
             targetX: window.innerWidth / 2,
             targetY: window.innerHeight / 2,
             color: '#ffd700',
-            fireRate: 20, // Slower but bigger magic
+            fireRate: 25,
             lastFire: 0,
             level: 1,
             xp: 0,
@@ -397,6 +477,10 @@
             enemySpawnRate = 60;
             frames = 0;
 
+            // Reset Run Tracking
+            currentKills = { slime: 0, bat: 0, golem: 0, spider: 0 };
+            playerSkillLevels = { multishot: 0, pierce: 0, speed: 0, firerate: 0, pulse: 0 };
+
             player.level = 1;
             player.xp = 0;
             player.xpToNext = 100;
@@ -413,6 +497,10 @@
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
             document.getElementById('level-up-screen').classList.add('hidden');
+
+            // Hide Sidebar during play
+            document.getElementById('history-sidebar').classList.remove('open');
+
             hud.classList.remove('hidden');
             hud.style.opacity = 1;
 
@@ -457,7 +545,7 @@
                 const card = document.createElement('div');
                 card.className = 'skill-card';
                 card.innerHTML = `
-                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-name">${skill.name} (Lv.${playerSkillLevels[skill.id]})</span>
                     <span class="skill-desc">${skill.desc}</span>
                 `;
                 card.onclick = () => applySkill(skill.id);
@@ -466,6 +554,7 @@
         }
 
         function applySkill(id) {
+            playerSkillLevels[id]++;
             switch (id) {
                 case 'multishot': player.projectileCount++; break;
                 case 'pierce': player.piercing++; break;
@@ -477,16 +566,55 @@
             document.getElementById('level-up-screen').classList.add('hidden');
         }
 
+        function updateSidebar() {
+            const sidebarList = document.getElementById('sidebar-history-list');
+            if (sessionHistory.length === 0) return;
+
+            let html = '';
+            // Display latest first
+            [...sessionHistory].reverse().forEach((run, i) => {
+                const realIndex = sessionHistory.length - i;
+                html += `
+                <div class="history-item">
+                    <h4>第 ${realIndex} 輪迴 : ${run.score} 靈魂</h4>
+                    <div class="history-stats">
+                        <div>⚔️ <strong>殲滅數:</strong> <br>
+                        史萊姆 <span>${run.kills.slime}</span> | 
+                        蝙蝠 <span>${run.kills.bat}</span> | 
+                        石頭人 <span>${run.kills.golem}</span> | 
+                        蜘蛛 <span>${run.kills.spider}</span>
+                        </div>
+                        <div style="margin-top:8px;">🔥 <strong>覺醒法術等級:</strong> <br>
+                        多重火球 <span>Lv.${run.skills.multishot}</span> | 
+                        烈焰貫穿 <span>Lv.${run.skills.pierce}</span> <br>
+                        風行步法 <span>Lv.${run.skills.speed}</span> | 
+                        極速詠唱 <span>Lv.${run.skills.firerate}</span> <br>
+                        爆裂衝擊 <span>Lv.${run.skills.pulse}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            sidebarList.innerHTML = html;
+        }
+
         function gameOver() {
             gameState = 'GAMEOVER';
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem('arcane_survivor_highscore', highScore);
             }
-            sessionHistory.push(score);
-            const historyStr = sessionHistory.map((s, i) => `第${i + 1}次: ${s}靈魂`).join('<br>');
-            document.getElementById('history-list').innerHTML = historyStr;
-            document.getElementById('history-list-gameover').innerHTML = historyStr;
+
+            sessionHistory.push({
+                score: score,
+                kills: Object.assign({}, currentKills),
+                skills: Object.assign({}, playerSkillLevels)
+            });
+
+            updateSidebar();
+
+            // Show menus and sidebar
+            document.getElementById('history-sidebar').classList.add('open');
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = `收集的靈魂: ${score}`;
             document.getElementById('menu-highscore').innerText = `最高靈魂: ${highScore}`;
@@ -501,7 +629,7 @@
                 this.speed = 10;
                 this.vx = Math.cos(angle) * this.speed;
                 this.vy = Math.sin(angle) * this.speed;
-                this.color = '#ff6a00'; // Fireball color
+                this.color = '#ff6a00';
                 this.piercing = player.piercing;
                 this.hitEnemies = new Set();
                 this.trail = [];
@@ -514,7 +642,6 @@
             }
             draw() {
                 ctx.save();
-                // Draw trailing fire
                 for (let i = 0; i < this.trail.length; i++) {
                     const pt = this.trail[i];
                     ctx.globalAlpha = (i / this.trail.length) * 0.5;
@@ -545,13 +672,12 @@
                 this.y = y;
                 this.radius = 6;
                 this.value = value;
-                this.color = '#00ffff'; // blue crystal
+                this.color = '#00ffff';
                 this.pulling = false;
-                this.vy = -2; // initial bounce
+                this.vy = -2;
                 this.vx = (Math.random() - 0.5) * 4;
             }
             update() {
-                // Bounce friction
                 this.x += this.vx;
                 this.y += this.vy;
                 this.vx *= 0.9;
@@ -569,8 +695,6 @@
             draw() {
                 ctx.save();
                 ctx.fillStyle = '#ccffff';
-
-                // Draw a diamond
                 ctx.beginPath();
                 ctx.moveTo(this.x, this.y - this.radius);
                 ctx.lineTo(this.x + this.radius * 0.8, this.y);
@@ -589,26 +713,33 @@
                 this.health = 1;
                 this.xpValue = 30;
 
-                if (type === 'fast') { // Bat
+                // Bind original logic types to custom names for kills tracking
+                this.monsterName = 'slime';
+
+                if (type === 'fast') {
                     this.radius = 12;
                     this.speedMult = 1.8;
-                    this.color = '#4b0082'; // Indigo
+                    this.color = '#4b0082';
                     this.xpValue = 20;
-                } else if (type === 'tank') { // Golem
+                    this.monsterName = 'bat';
+                } else if (type === 'tank') {
                     this.radius = 35;
                     this.speedMult = 0.5;
-                    this.color = '#555555'; // Grey
+                    this.color = '#555555';
                     this.health = 6 + Math.floor(score / 4000);
                     this.xpValue = 120;
-                } else if (type === 'swarm') { // Rats/Spiders
+                    this.monsterName = 'golem';
+                } else if (type === 'swarm') {
                     this.radius = 8;
                     this.speedMult = 1.3;
-                    this.color = '#8b0000'; // Dark red
+                    this.color = '#8b0000';
                     this.xpValue = 15;
-                } else { // Slime
+                    this.monsterName = 'spider';
+                } else {
                     this.radius = 20;
                     this.speedMult = 0.8;
-                    this.color = '#32cd32'; // Lime green
+                    this.color = '#32cd32';
+                    this.monsterName = 'slime';
                 }
 
                 if (Math.random() < 0.5) {
@@ -644,7 +775,6 @@
                 ctx.translate(this.x, this.y);
 
                 if (this.type === 'fast') {
-                    // Bat wing shape
                     const flap = Math.sin(this.wobble * 2) * 5;
                     ctx.rotate(Math.atan2(this.vy, this.vx) + Math.PI / 2);
                     ctx.fillStyle = this.color;
@@ -656,7 +786,6 @@
                     ctx.closePath();
                     ctx.fill();
                 } else if (this.type === 'tank') {
-                    // Stone Golem
                     ctx.fillStyle = this.color;
                     ctx.strokeStyle = '#222';
                     ctx.lineWidth = 3;
@@ -669,12 +798,10 @@
                     ctx.fill();
                     ctx.stroke();
                 } else if (this.type === 'swarm') {
-                    // Spiders
                     ctx.fillStyle = this.color;
                     ctx.beginPath();
                     ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
                     ctx.fill();
-                    // Draw little legs
                     ctx.strokeStyle = '#222';
                     ctx.lineWidth = 2;
                     for (let i = 0; i < 4; i++) {
@@ -689,13 +816,11 @@
                         ctx.stroke();
                     }
                 } else {
-                    // Slime blob
                     const squeeze = Math.sin(this.wobble) * 3;
                     ctx.fillStyle = this.color;
                     ctx.beginPath();
                     ctx.ellipse(0, 0, this.radius + squeeze, this.radius - squeeze, 0, 0, Math.PI * 2);
                     ctx.fill();
-                    // Slime eyes
                     ctx.fillStyle = '#fff';
                     ctx.beginPath(); ctx.arc(-5, -5, 3, 0, Math.PI * 2); ctx.fill();
                     ctx.beginPath(); ctx.arc(5, -5, 3, 0, Math.PI * 2); ctx.fill();
@@ -740,14 +865,12 @@
             }
         }
 
-        // Draw Wizard Character
         function drawPlayer() {
             ctx.save();
             ctx.translate(player.x, player.y);
             ctx.rotate(player.aimAngle + Math.PI / 2);
 
-            // Robe / Body
-            ctx.fillStyle = '#4B0082'; // Deep purple robe
+            ctx.fillStyle = '#4B0082';
             ctx.beginPath();
             ctx.moveTo(0, -player.radius);
             ctx.lineTo(player.radius, player.radius);
@@ -755,13 +878,12 @@
             ctx.closePath();
             ctx.fill();
 
-            // Head & Hat
-            ctx.fillStyle = '#ffcc99'; // Skin color
+            ctx.fillStyle = '#ffcc99';
             ctx.beginPath();
             ctx.arc(0, -player.radius, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            ctx.fillStyle = '#220044'; // Hat color
+            ctx.fillStyle = '#220044';
             ctx.beginPath();
             ctx.moveTo(-10, -player.radius);
             ctx.lineTo(10, -player.radius);
@@ -769,7 +891,6 @@
             ctx.closePath();
             ctx.fill();
 
-            // Magical Staff
             ctx.strokeStyle = '#8B4513';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -777,7 +898,6 @@
             ctx.lineTo(player.radius + 2, -player.radius - 10);
             ctx.stroke();
 
-            // Staff Gem
             ctx.fillStyle = Math.random() > 0.5 ? '#00ffff' : '#ff00ff';
             ctx.beginPath();
             ctx.arc(player.radius + 2, -player.radius - 12, 4, 0, Math.PI * 2);
@@ -785,7 +905,6 @@
 
             ctx.restore();
 
-            // Mana Shield Circle
             if (player.shield > 0) {
                 ctx.save();
                 ctx.translate(player.x, player.y);
@@ -808,9 +927,7 @@
 
         function animate() {
             frames++;
-            // Draw floor/bg clearing
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = 'rgba(20, 15, 30, 0.4)'; // Dark magic floor
+            ctx.fillStyle = 'rgba(20, 15, 30, 0.4)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (gameState === 'PLAYING' || gameState === 'LEVELING') {
@@ -818,7 +935,7 @@
                     player.x += (player.targetX - player.x) * player.moveSpeed;
                     player.y += (player.targetY - player.y) * player.moveSpeed;
 
-                    if (frames - player.lastHit > 180) { // 3 seconds
+                    if (frames - player.lastHit > 180) {
                         player.shield = Math.min(player.maxShield, player.shield + player.shieldRegen);
                     }
                 }
@@ -830,7 +947,6 @@
                     return;
                 }
 
-                // Fire Magic
                 if (frames % player.fireRate === 0) {
                     const baseAngle = player.aimAngle;
                     const spread = 0.25;
@@ -846,7 +962,6 @@
                     return p.x > 0 && p.x < canvas.width && p.y > 0 && p.y < canvas.height;
                 });
 
-                // Spawn Monsters
                 if (frames % Math.max(10, Math.floor(enemySpawnRate - score / 800)) === 0) {
                     const rand = Math.random();
                     let type = 'basic';
@@ -861,21 +976,18 @@
                     }
                 }
 
-                // Update Gems
                 xpGems = xpGems.filter(gem => {
                     gem.update();
                     gem.draw();
                     const dist = Math.hypot(gem.x - player.x, gem.y - player.y);
                     if (dist < player.radius + gem.radius + 10) {
                         gainXP(gem.value);
-                        // small absorb particle
                         spawnParticle(player.x, player.y, '#00ffff', 2);
                         return false;
                     }
                     return true;
                 });
 
-                // Update Monsters
                 enemies = enemies.filter((e, eIndex) => {
                     e.update();
                     e.draw();
@@ -909,6 +1021,7 @@
 
                             if (e.health <= 0) {
                                 score += e.xpValue;
+                                currentKills[e.monsterName]++; // Track kills
                                 spawnParticle(e.x, e.y, e.color, 20);
                                 xpGems.push(new XPGem(e.x, e.y, e.xpValue));
                                 enemies.splice(eIndex, 1);
@@ -926,7 +1039,6 @@
                 updateHUD();
             }
 
-            // Particles
             particles = particles.filter(p => {
                 p.update();
                 p.draw();
