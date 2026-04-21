@@ -282,9 +282,13 @@
                 <h1 style="color: var(--secondary); text-shadow: 0 0 10px var(--secondary);">
                     靈魂消散</h1>
                 <p>你的魔力已被吞噬。魔物再次佔據了森林。</p>
-                <h2 id="final-score" style="font-size: 2rem; margin-bottom: 2rem; color:#fff;">靈魂收集: 0</h2>
-                <button class="btn" style="border-color: var(--secondary); color: var(--secondary);"
+                <h2 id="final-score" style="font-size: 2rem; margin-bottom: 1.5rem; color:#fff;">靈魂收集: 0</h2>
+                <button class="btn"
+                    style="border-color: var(--secondary); color: var(--secondary); margin-bottom: 1.5rem;"
                     onclick="startGame()">再次輪迴</button>
+                <div style="font-size: 0.8rem; color: #aaa; max-height: 80px; overflow-y: auto;">
+                    本次遊玩紀錄:<br><span id="history-list-gameover">無紀錄</span>
+                </div>
             </div>
         </div>
 
@@ -480,7 +484,9 @@
                 localStorage.setItem('arcane_survivor_highscore', highScore);
             }
             sessionHistory.push(score);
-            document.getElementById('history-list').innerHTML = sessionHistory.map((s, i) => `第${i + 1}次: ${s}靈魂`).join('<br>');
+            const historyStr = sessionHistory.map((s, i) => `第${i + 1}次: ${s}靈魂`).join('<br>');
+            document.getElementById('history-list').innerHTML = historyStr;
+            document.getElementById('history-list-gameover').innerHTML = historyStr;
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = `收集的靈魂: ${score}`;
             document.getElementById('menu-highscore').innerText = `最高靈魂: ${highScore}`;
